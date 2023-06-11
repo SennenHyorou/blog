@@ -7,7 +7,6 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -49,7 +48,7 @@ class ArticleController extends Controller
 
         $article->tags()->attach($request->tags);
 
-        return redirect(route('articles.index'))->with('message', 'Article has been successfully been created.');
+        return redirect(route('dashboard'))->with('message', 'Article has been successfully been created.');
     }
 
     /**
@@ -73,7 +72,7 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ArticleRequest $request, Article $article):RedirectResponse
+    public function update(ArticleRequest $request, Article $article): RedirectResponse
     {
         $article->update(
             $request->validated() +
@@ -84,15 +83,16 @@ class ArticleController extends Controller
 
         $article->tags()->sync($request->tags);
 
-        return redirect(route('articles.index'))->with('message', 'Article has been successfully been updated.');
+        return redirect(route('dashboard'))->with('message', 'Article has been successfully been updated.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): RedirectResponse
     {
-        //
+        $article->delete();
+        return redirect(route('dashboard'))->with('message', 'Article has been successfully been deleted.');
     }
 
     private function getCategories(): array
