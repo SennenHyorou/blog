@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Article;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +21,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $articles = Article::with('user', 'tags')->where('user_id', auth()->user()->id)->latest()->paginate(10);
+    return view('dashboard', compact('articles'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('/articles', ArticleController::class)->only(['index', 'show']);
