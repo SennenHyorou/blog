@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ArticleStoreRequest;
+use App\Http\Requests\ArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
@@ -28,8 +28,8 @@ class ArticleController extends Controller
      */
     public function create(): View
     {
-        $categories = Category::pluck('name', 'id');
-        $tags = Tag::pluck('name', 'id');
+        $categories = $this->getCategories();
+        $tags = $this->getTags();
 
         return view('articles.create', compact('categories', 'tags'));
     }
@@ -37,7 +37,7 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ArticleStoreRequest $request): RedirectResponse
+    public function store(ArticleRequest $request): RedirectResponse
     {
         $article = Article::create(
             $request->validated() +
@@ -55,7 +55,7 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Article $article)
+    public function show(Article $article): View
     {
         return view('articles.show', compact('article'));
     }
@@ -65,15 +65,26 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        //
+        $categories = $this->getCategories();
+        $tags = $this->getTags();
+        return view('articles.edit', compact('article', 'categories', 'tags'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Article $article)
+    public function update(ArticleRequest $request, Article $article):RedirectResponse
     {
-        //
+        $article->update(
+            $request->validated() +
+            [
+                'slug' => Str::slug($request->title)
+            ]
+        );
+
+        $article->tags()->sync($request->tags);
+
+        return redirect(route('articles.index'))->with('message', 'Article has been successfully been updated.');
     }
 
     /**
@@ -82,6 +93,16 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         //
+    }
+
+    private function getCategories(): array
+    {
+        return Category::pluck('name', 'id')->toArray();
+    }
+
+    private function getTags(): array
+    {
+        return Tag::pluck('name', 'id')->toArray();
     }
 
 }
