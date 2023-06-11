@@ -3,6 +3,24 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="w-full mx-auto mb-10">
+               <span class="block inline text-md text-white transition-all hover:text-gray-100 font-bold uppercase">
+                   <a href="{{ route('articles.create') }}" class="bg-red-700 rounded-md py-3 px-5">
+                        Create Article
+                   </a>
+              </span>
+                    </div>
+
+                    @if(session('message'))
+                        <div
+                            class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+                            role="alert">
+                <span class="font-medium">
+                    Success alert!
+                </span>
+                            {{ session('message') }}
+                        </div>
+                    @endif
                     <h2 class="font-bold text-xl">
                         Here's a list of your article {{auth()->user()->name}}
                     </h2>
